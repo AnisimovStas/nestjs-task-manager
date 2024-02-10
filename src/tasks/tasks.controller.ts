@@ -15,6 +15,8 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskStatusDto } from './dto/update-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from '../auth/get-user.decorator';
+import { User } from '../auth/user.entity';
 
 @UseGuards(AuthGuard())
 @Controller('tasks')
@@ -22,31 +24,41 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get()
-  getAllTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
-    return this.tasksService.getTasks(filterDto);
+  getAllTasks(
+    @Query() filterDto: GetTasksFilterDto,
+    @GetUser() user: User,
+  ): Promise<Task[]> {
+    return this.tasksService.getTasks(filterDto, user);
   }
 
   @Post()
-  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksService.createTask(createTaskDto);
+  createTask(
+    @Body() createTaskDto: CreateTaskDto,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    return this.tasksService.createTask(createTaskDto, user);
   }
 
   @Get('/:id')
-  getTaskById(@Param('id') id: string): Promise<Task> {
-    return this.tasksService.getTaskById(id);
+  getTaskById(@Param('id') id: string, @GetUser() user: User): Promise<Task> {
+    return this.tasksService.getTaskById(id, user);
   }
 
   @Delete('/:id')
-  deleteTaskById(@Param('id') id: string): Promise<void> {
-    return this.tasksService.deleteTaskById(id);
+  deleteTaskById(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<void> {
+    return this.tasksService.deleteTaskById(id, user);
   }
   //
   @Patch('/:id/status')
   updateTaskStatus(
     @Param('id') id: string,
     @Body() updateStatusDto: UpdateTaskStatusDto,
+    @GetUser() user: User,
   ): Promise<Task> {
     const { status } = updateStatusDto;
-    return this.tasksService.updateTaskStatus(id, status);
+    return this.tasksService.updateTaskStatus(id, status, user);
   }
 }
