@@ -18,11 +18,17 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../auth/get-user.decorator';
 import { User } from '../auth/user.entity';
 import { Logger } from '@nestjs/common';
+// import { ConfigService } from '@nestjs/config';
 @UseGuards(AuthGuard())
 @Controller('tasks')
 export class TasksController {
   private logger = new Logger('TasksController');
-  constructor(private readonly tasksService: TasksService) {}
+  constructor(
+    private readonly tasksService: TasksService,
+    // private configService: ConfigService,
+  ) {
+    // console.log(configService.get('TEST_VALUE'));
+  }
 
   @Get()
   getAllTasks(
